@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import {getData} from "@/services/getData";
+
 export default {
   data() {
     return {
@@ -31,18 +33,18 @@ export default {
       ],
       fields: [
         {
-          key: 'marca',
+          key: 'brand',
           label: 'Marca',
           sortable: true,
           sortLabel: false
         },
         {
-          key: 'modelo',
+          key: 'model',
           label: 'Modelo',
           sortable: true,
         },
         {
-          key: 'anio',
+          key: 'year',
           label: 'Año',
           sortable: true,
         },
@@ -53,6 +55,20 @@ export default {
         }
       ]
     }
+  },
+
+  methods:{
+    async getData(){
+      const data= await getData({
+        pageNumber: this.currentPage,
+        pageSize: this.perPage
+      })
+      this.items = data.content
+    }
+  },
+
+  mounted() {
+    this.getData()
   }
 }
 </script>

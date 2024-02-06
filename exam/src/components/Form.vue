@@ -16,7 +16,7 @@
           <span class="text-danger d-flex my-2" v-if="modelo && !modeloV">Modelo inválido</span>
           <div class="input-group-text">
             <label class="lab">Año</label>
-            <b-input class="input-form" type="date" v-model="anio" :state="anioV"/>
+            <b-input class="input-form" type="number" v-model="anio" :state="anioV"/>
           </div>
           <span class="text-danger d-flex my-2" v-if="anio && !anioV">Año inválido</span>
           <div class="input-group-text">
@@ -33,6 +33,8 @@
   </div>
 </template>
 <script>
+import {register} from "@/services/register";
+
 export default {
   data() {
     return {
@@ -43,10 +45,31 @@ export default {
     }
   },
   methods:{
-    register(event){
+    async register(event){
       event.preventDefault()
       if(this.marcaV && this.modeloV && this.anioV && this.serieV){
-
+        const data= {
+          brand: this.marca,
+          model: this.modelo,
+          serie: this.serie,
+          year: this.anio
+        }
+        const result = await register(data)
+        if (result.id){
+          this.$swal({
+            title: 'Éxito',
+            type: 'success',
+            icon: 'success',
+            text: 'El registro se hizo correctamente'
+          })
+        }else{
+          this.$swal({
+            title: 'Error',
+            type: 'error',
+            icon: 'error',
+            text: 'Ocurrió un error al registrar'
+          })
+        }
       }else{
         this.$swal({
           title: 'Error',
@@ -75,7 +98,7 @@ export default {
       if (this.anio == null) {
         return null
       }
-      return new Date (this.anio).getTime() >= (new Date()).getTime()
+      return (this.anio <= (new Date()).getFullYear()) && this.anio > 1900
     },
     serieV() {
       if ([null, ''].includes(this.serie)) {
