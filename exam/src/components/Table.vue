@@ -3,14 +3,11 @@
     <b-card>
       <b-container>
         <h1>Autos</h1>
-        <b-table :items="items" :fields="fields" :per-page="perPage" :current-page="currentPage"></b-table>
+        <b-table :fields="fields" id="my-table" :items="findData" :per-page="perPage"
+                 :current-page="currentPage" small></b-table>
         <div class="w-100 d-flex justify-content-center">
-          <b-pagination
-              v-model="currentPage"
-              :total-rows="items.length"
-              :per-page="perPage"
-              aria-controls="my-table"
-          ></b-pagination>
+          <b-pagination v-model="currentPage" :total-rows="total" :per-page="perPage"
+                        aria-controls="my-table"></b-pagination>
         </div>
       </b-container>
     </b-card>
@@ -25,12 +22,8 @@ export default {
     return {
       perPage: 3,
       currentPage: 1,
-      items: [
-        {marca: 40, modelo: 'Dickerson', serie: 'Macdonald', anio: '2023-08-05'},
-        {marca: 21, modelo: 'Larsen', serie: 'Shaw', anio: '2023-08-05'},
-        {marca: 89, modelo: 'Geneva', serie: 'Wilson', anio: '2023-08-05'},
-        {marca: 38, modelo: 'Jami', serie: 'Carney', anio: '2023-08-05'}
-      ],
+      total: null,
+      items: [],
       fields: [
         {
           key: 'brand',
@@ -58,17 +51,19 @@ export default {
   },
 
   methods:{
-    async getData(){
+    async findData(){
       const data= await getData({
-        pageNumber: this.currentPage,
-        pageSize: this.perPage
+        page: this.currentPage -1,
+        size: this.perPage
       })
-      this.items = data.content
+
+      this.total = data.totalElements
+      return data.content
     }
   },
 
   mounted() {
-    this.getData()
+    this.findData()
   }
 }
 </script>
